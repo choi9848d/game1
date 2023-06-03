@@ -1,0 +1,64 @@
+import random
+import curses #사용자 인터페이스
+
+s = curses.initscr() #initscr() = 터미널 창 설정 및 초기화
+curses.curs_set(0) #커서 가시성 설정
+sh, sw = s.getmaxyx() #getmaxyx 현재 터미널 창의 행과 열의 개수를 반환
+w = curses.newwin(sh, sw, 0, 0) # newwin(nlines, ncols, begin_y, begin_x) 새로운 창 생성
+# nlines: 윈도우의 행 수를 지정.  ㅡ
+# ncols: 윈도우의 열 수를 지정.   |
+# begin_y: 윈도우의 시작 행 위치를 지정.
+# begin_x: 윈도우의 시작 열 위치를 지정.
+w.keypad(1) # 1값을 전달하면, 특수 키 입력 모드가 활성화
+            # (KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT 등)을 사용하여
+            # 화면에서 특수 키 입력을 감지하고 처리할 수 있음
+w.timeout(100) #속도
+
+snk_x = sw // 4
+snk_y = sh // 2
+snake = [
+    [snk_y, snk_x], # 뱀의 머리 위치
+    [snk_y, snk_x - 1], #뱀의 몸통 첫번째 좌표
+    [snk_y, snk_x - 2]  #뱀의 몸통 두번째 좌표
+]
+
+food = [sh // 2, sw // 2]
+w.addch(food[0], food[1], curses.ACS_PI) #ACS =  텍스트 기반의 그래픽 요소를 화면에 표시한다.
+# 0=
+key = curses.KEY_RIGHT #KEY_RIGHT = 터미널 기반의 사용자 인터페이스를 제어하는 기능을 제공
+#-----------------------------------------------------------------------------------
+while True:
+    next_key = w.getch()
+    key = key if next_key == -1 else next_key
+
+    if snake[0][0] in [0, sh] or snake[0][1] in [0, sw] or snake[0] in snake[1:]:
+        curses.endwin()
+        quit()
+
+    new_head = [snake[0][0], snake[0][1]]
+
+    if key == curses.KEY_DOWN:
+        new_head[0] += 1
+    if key == curses.KEY_UP:
+        new_head[0] -= 1
+    if key == curses.KEY_LEFT:
+        new_head[1] -= 1
+    if key == curses.KEY_RIGHT:
+        new_head[1] += 1
+
+    snake.insert(0, new_head)
+
+    if snake[0] == food:
+        food = None
+        while food is None:
+            nf = [
+                random.randint(1, sh - 1),
+                random.randint(1, sw - 1)
+            ]
+            food = nf if nf not in snake else None
+        w.addch(food[0], food[1], curses.ACS_PI)
+    else:
+        tail = snake.pop()
+        w.addch(tail[0], tail[1], ' ')
+
+    w.addch(snake[0][0], snake[0][1], curses.ACS_CKBOARD)
