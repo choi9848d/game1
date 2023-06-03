@@ -1,0 +1,21 @@
+import random
+
+def guess_number():
+    number = random.randint(1, 100)  # 1부터 100 사이의 임의의 숫자를 선택합니다.
+    attempts = 0  # 시도 횟수를 저장하는 변수입니다.
+    
+    print("1부터 100 사이의 숫자를 맞춰보세요.")
+    
+    while True:
+        guess = int(input("추측한 숫자를 입력하세요: "))  # 사용자로부터 추측한 숫자를 입력받습니다.
+        attempts += 1  # 시도 횟수를 1 증가시킵니다.
+        
+        if guess < number:  # 추측한 숫자가 선택한 숫자보다 작을 경우
+            print("숫자가 너무 작습니다.")
+        elif guess > number:  # 추측한 숫자가 선택한 숫자보다 클 경우
+            print("숫자가 너무 큽니다.")
+        else:  # 추측한 숫자가 선택한 숫자와 일치할 경우
+            print(f"정답입니다! {attempts}번 시도하셨습니다.")
+            break
+
+guess_number()
